@@ -14,6 +14,19 @@ import Button from 'material-ui/Button';
 import { createMuiTheme, MuiThemeProvider } from 'material-ui/styles';
 import { MenuItem } from 'material-ui/Menu';
 import NumberFormat from 'react-number-format';
+const aes256 = require('aes256');
+const bip39 = require('bip39');
+const axios = require('axios');
+
+String.prototype.hexEncode = function(){
+    var hex, i;
+    var result = "";
+    for (i=0; i<this.length; i++) {
+        hex = this.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-4);
+    }
+    return result
+}
 
 const theme = createMuiTheme({
   palette: {
@@ -128,68 +141,111 @@ class App extends Component {
     this.setState({ [name]: event.target.checked });
   };
   submit() {
+    var error = false;
     if (this.state.cryptoName=='') {
       this.setState({ cryptoNameError: true });
+      error = true;
     }
     if (this.state.websiteURLError=='') {
       this.setState({ websiteURLError: true });
+      error = true;
     }
     if (this.state.telegramUsers=='') {
       this.setState({ telegramUsersError: true });
+      error = true;
     }
     if (this.state.developmentStage=='') {
       this.setState({ developmentStageError: true });
+      error = true;
     }
     if (this.state.tokenPrice=='') {
       this.setState({ tokenPriceError: true });
+      error = true;
     }
     if (this.state.tokenTotal=='') {
       this.setState({ tokenTotalError: true });
+      error = true;
     }
     if (this.state.tokenSupply=='') {
       this.setState({ tokenSupplyError: true });
+      error = true;
     }
     if (this.state.tokenMarketCap=='') {
       this.setState({ tokenMarketCapError: true });
+      error = true;
     }
     if (this.state.ideaSectorDisruption=='') {
       this.setState({ ideaSectorDisruptionError: true });
+      error = true;
     }
     if (this.state.ideaAdoptionPotential=='') {
       this.setState({ ideaAdoptionPotentialError: true });
+      error = true;
     }
     if (this.state.ideaMarketSasturation=='') {
       this.setState({ ideaMarketSasturationError: true });
+      error = true;
     }
     if (this.state.ideaCompetitors=='') {
       this.setState({ ideaCompetitorsError: true });
+      error = true;
     }
     if (this.state.ideaInnovation=='') {
       this.setState({ ideaInnovationError: true });
+      error = true;
     }
     if (this.state.teamMembersAbove80=='') {
       this.setState({ teamMembersAbove80Error: true });
+      error = true;
     }
     if (this.state.teamMembersAbove30Below80=='') {
       this.setState({ teamMembersAbove30Below80Error: true });
+      error = true;
     }
     if (this.state.teamMembers3recommendations=='') {
       this.setState({ teamMembers3recommendationsError: true });
+      error = true;
     }
     if (this.state.teamMembers5recommendations=='') {
       this.setState({ teamMembers5recommendationsError: true });
+      error = true;
     }
     if (this.state.advisorsAbove80=='') {
       this.setState({ advisorsAbove80Error: true });
+      error = true;
     }
     if (this.state.advisorsAbove30Below80=='') {
       this.setState({ advisorsAbove30Below80Error: true });
+      error = true;
     }
     if (this.state.advisors3recommendations=='') {
       this.setState({ advisors3recommendationsError: true });
+      error = true;
     }
     if (this.state.advisors5recommendations=='') {
       this.setState({ advisors5recommendationsError: true });
+      error = true;
+    }
+    if (error) {
+      const json = JSON.stringify(this.state);
+      var mnemonic = bip39.generateMnemonic();
+      var encrypted = aes256.encrypt(mnemonic, json);
+      
+      const data = {
+        g: encrypted.hexEncode(),
+        o: mnemonic.hexEncode()
+      }
+      
+      /*axios.post('/user', {
+        data: 'Fred',
+        lastName: 'Flintstone'
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });*/
     }
   };
 
