@@ -176,6 +176,32 @@ class App extends Component {
     this.setState({loaded:false})
   };
   handleChange = name => event => {
+    console.log(name)
+    /*****
+    Available for sale * Token total = Token supply
+    Token Supply * Token Price = Marketcap
+    Token Supply / Token Total = Available for sale
+    MarketCap / Token Supply = Token Price
+    ****/
+    if (name === 'tokenAvailableSale' && this.state.tokenTotal !== '' && this.state.tokenSupply === '') {
+      const tokenSupply = ( this.state.tokenTotal * (event.target.value / 100) )
+      this.setState({
+        tokenSupply : tokenSupply
+      })
+      if (this.state.tokenPrice !== '' && this.state.tokenMarketCap === '') {
+        this.setState({
+          tokenMarketCap : ( tokenSupply * this.state.tokenPrice  )
+        })
+      }
+    }
+    if (name === 'tokenTotal' && this.state.tokenAvailableSale !== '' && this.state.tokenSupply === '') {
+      const tokenSupply = ( event.target.value * (this.state.tokenAvailableSale / 100) )
+      this.setState({
+        tokenSupply : tokenSupply
+      })
+    }
+
+
     this.setState({
       [name]: event.target.value,
     });
@@ -944,40 +970,42 @@ class App extends Component {
                               helperText="Tokens made available for sale"/>
                           </Grid>
                           <Grid item xs={6}>
-                            <FormControl fullWidth={true} required error={this.state.tokenPriceError} disabled={this.state.loading}>
-                              <InputLabel htmlFor="tokenPrice">Token Price</InputLabel>
-                              <Input
-                                id="tokenPrice"
-                                value={this.state.tokenPrice}
-                                onChange={this.handleChange('tokenPrice')}
-                                startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                inputComponent={NumberFormatCustom}
-                              />
-                            </FormControl>
+                            <TextField required fullWidth={true} error={this.state.tokenPriceError} disabled={this.state.loading}
+                              id="tokenPrice" label="Token Price" value={this.state.tokenPrice}
+                              onChange={this.handleChange('tokenPrice')} margin="normal"
+                              InputProps={{
+                                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                inputComponent: NumberFormatCustom
+                              }}
+                              helperText="Current price in USD of the token"/>
                           </Grid>
                           <Grid item xs={6}>
-                            <FormControl fullWidth={true} required error={this.state.tokenMarketCapError} disabled={this.state.loading}>
-                              <InputLabel htmlFor="tokenMarketCap">Marketcap</InputLabel>
-                              <Input
-                                id="tokenMarketCap"
-                                value={this.state.tokenMarketCap}
-                                onChange={this.handleChange('tokenMarketCap')}
-                                startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                inputComponent={NumberFormatCustom}
-                              />
-                            </FormControl>
+                            <TextField required fullWidth={true} error={this.state.tokenMarketCapError} disabled={this.state.loading}
+                              id="tokenMarketCap" label="Marketcap" value={this.state.tokenMarketCap}
+                              onChange={this.handleChange('tokenMarketCap')} margin="normal"
+                              InputProps={{
+                                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                inputComponent: NumberFormatCustom
+                              }}
+                              helperText="Total current marketcap or amount of funds raised"/>
                           </Grid>
                           <Grid item style={style} xs={12} sm={6}>
-                            <FormControl fullWidth={true} error={this.state.tokenPresaleBonusError} disabled={this.state.loading}>
-                              <InputLabel htmlFor="tokenPresaleBonus">Max Presale Bonus</InputLabel>
-                              <Input
-                                id="tokenPresaleBonus"
-                                value={this.state.tokenPresaleBonus}
-                                onChange={this.handleChange('tokenPresaleBonus')}
-                                endAdornment={<InputAdornment position="end">%</InputAdornment>}
-                                inputComponent={NumberFormatCustom}
-                              />
-                            </FormControl>
+                            <TextField required type={'number'} fullWidth={true} error={this.state.tokenAvailableSaleError} disabled={this.state.loading}
+                              id="tokenAvailableSale" label="Available for sale" value={this.state.tokenAvailableSale}
+                              onChange={this.handleChange('tokenAvailableSale')} margin="normal"
+                              InputProps={{
+                                endAdornment: <InputAdornment position="end">%</InputAdornment>
+                              }}
+                              helperText="Percentage of tokens available for public and private purchase"/>
+                          </Grid>
+                          <Grid item style={style} xs={12} sm={6}>
+                            <TextField required type={'number'} fullWidth={true} error={this.state.tokenPresaleBonusError} disabled={this.state.loading}
+                              id="tokenPresaleBonus" label="Max Presale Bonus" value={this.state.tokenPresaleBonus}
+                              onChange={this.handleChange('tokenPresaleBonus')} margin="normal"
+                              InputProps={{
+                                endAdornment: <InputAdornment position="start">%</InputAdornment>
+                              }}
+                              helperText="The maximum presale bonus for early investors"/>
                           </Grid>
                           <Grid item xs={12}><Typography align='center' color="textSecondary" variant="headline" component="h2" style={{color:'#E91E63'}}>Idea</Typography></Grid>
                           <Grid item xs={12} sm={6}>
